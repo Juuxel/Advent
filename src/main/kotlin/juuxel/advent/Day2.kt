@@ -1,19 +1,17 @@
 package juuxel.advent
 
-import juuxel.advent.util.DynIntArray
-import juuxel.advent.util.toDynIntArray
 import java.nio.file.Files
 import java.nio.file.Paths
 
 fun main() {
     val input = Files.readAllLines(Paths.get("day2.txt")).joinToString(separator = "")
-    val mem = input.split(',').map { it.toInt() }.toDynIntArray()
+    val mem = input.split(',').map { it.toInt() }.toIntArray()
 
-    part1(mem.copy())
+    part1(mem.copyOf())
     part2(mem) // Part 2 is mem-safe
 }
 
-private fun part1(mem: DynIntArray) {
+private fun part1(mem: IntArray) {
     println(
         "Part 1: " + run(mem) {
             it[1] = 12
@@ -22,10 +20,10 @@ private fun part1(mem: DynIntArray) {
     )
 }
 
-private fun part2(mem: DynIntArray) {
+private fun part2(mem: IntArray) {
     for (noun in 0 until mem.size) {
         for (verb in 0 until mem.size) {
-            val result = run(mem.copy()) {
+            val result = run(mem.copyOf()) {
                 it[1] = noun
                 it[2] = verb
             }
@@ -38,7 +36,7 @@ private fun part2(mem: DynIntArray) {
     }
 }
 
-private inline fun run(mem: DynIntArray, setup: (mem: DynIntArray) -> Unit): Int {
+private inline fun run(mem: IntArray, setup: (mem: IntArray) -> Unit): Int {
     setup(mem)
     val reader = MemReader(mem)
     while (true) {
@@ -46,7 +44,7 @@ private inline fun run(mem: DynIntArray, setup: (mem: DynIntArray) -> Unit): Int
     }
 }
 
-private class MemReader(private val mem: DynIntArray) {
+private class MemReader(private val mem: IntArray) {
     private var pos: Int = 0
 
     fun nextOpcode(): Intcode {
@@ -68,7 +66,7 @@ private sealed class Intcode {
     object Halt : Intcode()
     data class Unknown(val opcode: Int) : Intcode()
 
-    fun run(mem: DynIntArray): Unit? =
+    fun run(mem: IntArray): Unit? =
         when (this) {
             is Add -> mem[out] = mem[a] + mem[b]
             is Multiply -> mem[out] = mem[a] * mem[b]
