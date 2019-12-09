@@ -13,20 +13,14 @@ fun main() {
 
 private fun part1(mem: IntArray) {
     println(
-        "Part 1: " + run(mem) {
-            it[1] = 12
-            it[2] = 2
-        }
+        "Part 1: " + run(mem, noun = 12, verb = 2)
     )
 }
 
 private fun part2(mem: IntArray) {
-    for (noun in 0 until mem.size) {
-        for (verb in 0 until mem.size) {
-            val result = run(mem.copyOf()) {
-                it[1] = noun
-                it[2] = verb
-            }
+    for (noun in mem.indices) {
+        for (verb in mem.indices) {
+            val result = run(mem.copyOf(), noun, verb)
 
             if (result == 19690720) {
                 println("Part 2: ${100 * noun + verb}")
@@ -36,9 +30,10 @@ private fun part2(mem: IntArray) {
     }
 }
 
-private inline fun run(mem: IntArray, setup: (mem: IntArray) -> Unit): Int {
-    setup(mem)
+private fun run(mem: IntArray, noun: Int, verb: Int): Int {
     val reader = MemReader(mem)
+    mem[1] = noun
+    mem[2] = verb
     while (true) {
         reader.nextOpcode().run(mem) ?: return mem[0]
     }
